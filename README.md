@@ -1,2 +1,3 @@
 # clip-invariances
-Study of Invariances for CLIP models
+
+Measure invariances of CLIP pre-trained models for different augmentations. 
