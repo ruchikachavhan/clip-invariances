@@ -10,13 +10,16 @@ import numpy as np
 from scipy.spatial.distance import mahalanobis
 import json
 
+
+
 def main(args):
+    torch.manual_seed(args.seed)
+    torch.cuda.manual_seed(args.seed)
     device = "cuda:0" if torch.cuda.is_available() else "cpu"
     model, preprocess = clip.load(args.model, device=device)
     print("Preprocessing", preprocess)
 
     clean_dataset = ImageFolder(os.path.join(args.data_dir, 'val'), transform = preprocess)
-
     clean_loader = torch.utils.data.DataLoader(
         clean_dataset,
         batch_size=args.batch_size,
@@ -25,8 +28,7 @@ def main(args):
         drop_last=True,
     )
 
-    torch.manual_seed(args.seed)
-    torch.cuda.manual_seed(args.seed)
+
     clean_path = os.path.join(args.save_dir, 'clean_features.pt')
     if os.path.exists(clean_path):
         clean_features = torch.load(clean_path)
@@ -126,12 +128,11 @@ def get_features(loader, model, device, prefix):
     return torch.stack(features)
     
 
-
 if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--data-dir", type=str, default='../image-net100')
+    parser.add_argument("--data-dir", type=str, default='../../imagenet1k/')
     parser.add_argument("--save-dir", type=str, default='features/')
     parser.add_argument("--model", type=str, default='ViT-B/32', help='Type of Model')
     parser.add_argument("--batch-size", type=int, default=1)
